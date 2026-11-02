@@ -1,0 +1,21 @@
+{{ template "widget-base.html" . }}
+
+{{ define "widget-content" }}
+<ul class="list list-gap-10 collapsible-container" data-collapse-after="{{ .CollapseAfter }}">
+    {{ range .Games }}
+    <li class="flex gap-10 items-center">
+        <a href="{{ .StoreURL }}" target="_blank" rel="noreferrer" class="steam-game-cover-link">
+            <img class="steam-game-cover" src="{{ .ImageURL }}" alt="" loading="lazy">
+        </a>
+        <div class="min-width-0 grow">
+            <a class="size-h4 block text-truncate color-primary-if-not-visited" href="{{ .StoreURL }}" target="_blank" rel="noreferrer">{{ .Name }}</a>
+            <ul class="list-horizontal-text">
+                {{ if gt .DiscountPercent 0 }}<li class="color-positive">-{{ .DiscountPercent }}%</li>{{ end }}
+                <li>{{ .Price }}</li>
+                {{ if ne .OriginalPrice "" }}<li class="steam-game-old-price">{{ .OriginalPrice }}</li>{{ end }}
+            </ul>
+        </div>
+    </li>
+    {{ end }}
+</ul>
+{{ end }}

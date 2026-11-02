@@ -5,6 +5,12 @@
     <div class="size-h2 color-highlight text-center">{{ .Weather.WeatherCodeAsString }}</div>
     <div class="size-h4 text-center">Feels like {{ .Weather.ApparentTemperature }}°{{ if eq .Units "metric" }}C{{ else }}F{{ end }}</div>
 
+    {{ with .Weather.AirQuality }}
+    <div class="flex items-center justify-center margin-top-5 gap-7">
+        <div class="weather-aqi weather-aqi-{{ .CategoryClass }}" title="{{ .Description }} · PM2.5: {{ printf "%.0f" .PM25 }} µg/m³ · PM10: {{ printf "%.0f" .PM10 }} µg/m³">AQI {{ .US }} · {{ .Category }}</div>
+    </div>
+    {{ end }}
+
     <div class="weather-columns flex margin-top-15 justify-center">
         {{ range $i, $column := .Weather.Columns }}
         <div class="weather-column{{ if eq $i $.Weather.CurrentColumn }} weather-column-current{{ end }}">

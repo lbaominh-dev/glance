@@ -22,6 +22,7 @@ type calendarWidget struct {
 	widgetBase     `yaml:",inline"`
 	FirstDayOfWeek string        `yaml:"first-day-of-week"`
 	FirstDay       int           `yaml:"-"`
+	HolidaysJSON   string        `yaml:"-"`
 	cachedHTML     template.HTML `yaml:"-"`
 }
 
@@ -35,6 +36,7 @@ func (widget *calendarWidget) initialize() error {
 	}
 
 	widget.FirstDay = int(calendarWeekdaysToInt[widget.FirstDayOfWeek])
+	widget.HolidaysJSON = vietnamHolidaysJSON
 	widget.cachedHTML = widget.renderTemplate(widget, calendarWidgetTemplate)
 
 	return nil

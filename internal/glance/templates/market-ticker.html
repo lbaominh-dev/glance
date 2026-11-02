@@ -1,0 +1,14 @@
+<div class="market-ticker" role="status" aria-label="Giá vàng và chỉ số chứng khoán">
+    {{- range .Items }}
+    <div class="market-ticker-item" title="{{ .Title }}">
+        <span class="market-ticker-label">{{ .Label }}</span>
+        <span class="market-ticker-value">{{ .Value }}</span>
+        <span class="market-ticker-change {{ .ChangeClass }}">{{ .Change }}</span>
+        {{ if .SvgChartPoints }}
+        <svg class="market-ticker-chart {{ .ChangeClass }}" viewBox="0 0 100 50" preserveAspectRatio="none" aria-hidden="true">
+            <polyline fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" vector-effect="non-scaling-stroke" points="{{ .SvgChartPoints }}"></polyline>
+        </svg>
+        {{ end }}
+    </div>
+    {{- end }}
+</div>

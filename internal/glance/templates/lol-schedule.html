@@ -1,0 +1,15 @@
+{{ template "widget-base.html" . }}
+
+{{ define "widget-content" }}
+<ul class="list list-gap-10 collapsible-container" data-collapse-after="{{ .CollapseAfter }}">
+    {{ range .Events }}
+    <li class="flex justify-between items-center gap-10">
+        <div class="min-width-0">
+            <div class="size-h4 text-truncate color-highlight">{{ .Teams }}</div>
+            <div class="size-h6 color-subdue text-truncate">{{ .Tournament }}</div>
+        </div>
+        <div class="size-h6 color-subdue text-right" style="white-space: nowrap;">{{ .Time }}</div>
+    </li>
+    {{ end }}
+</ul>
+{{ end }}

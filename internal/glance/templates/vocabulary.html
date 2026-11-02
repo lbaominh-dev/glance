@@ -1,0 +1,38 @@
+{{ template "widget-base.html" . }}
+
+{{ define "widget-content" }}
+<div class="vocabulary-carousel">
+    {{ range $index, $word := .Words }}
+    <input class="vocabulary-radio" type="radio" name="vocabulary-{{ $.GetID }}" id="vocabulary-{{ $.GetID }}-{{ $index }}" {{ if eq $index 0 }}checked{{ end }}>
+    {{ end }}
+
+    <div class="vocabulary-track">
+        {{ range $index, $word := .Words }}
+        <div class="vocabulary-slide">
+            <label class="vocabulary-arrow vocabulary-arrow-prev" for="vocabulary-{{ $.GetID }}-{{ $word.PrevIndex }}" aria-label="Previous word">‹</label>
+
+            <label class="vocabulary-card">
+                <input class="vocabulary-flip" type="checkbox">
+                <span class="vocabulary-card-inner">
+                    <span class="vocabulary-card-face vocabulary-card-front">
+                        <span class="vocabulary-card-index">{{ printf "%02d / %02d" $word.Number (len $.Words) }}</span>
+                        <span class="vocabulary-card-word">{{ $word.Word }}</span>
+                        {{ if ne $word.Phonetic "" }}<span class="vocabulary-card-phonetic">{{ $word.Phonetic }}</span>{{ end }}
+                        {{ if ne $word.PartOfSpeech "" }}<span class="vocabulary-card-pos">{{ $word.PartOfSpeech }}</span>{{ end }}
+                        <span class="vocabulary-card-hint">Tap to reveal</span>
+                    </span>
+                    <span class="vocabulary-card-face vocabulary-card-back">
+                        <span class="vocabulary-card-back-word">{{ $word.Word }} <span class="vocabulary-card-pos-inline">{{ $word.PartOfSpeech }}</span></span>
+                        <span class="vocabulary-card-definition">{{ $word.Definition }}</span>
+                        {{ if ne $word.Example "" }}<span class="vocabulary-card-example">“{{ $word.Example }}”</span>{{ end }}
+                        <a class="vocabulary-card-link" href="https://dictionary.cambridge.org/dictionary/english/{{ $word.Word }}" target="_blank" rel="noreferrer">Cambridge Dictionary</a>
+                    </span>
+                </span>
+            </label>
+
+            <label class="vocabulary-arrow vocabulary-arrow-next" for="vocabulary-{{ $.GetID }}-{{ $word.NextIndex }}" aria-label="Next word">›</label>
+        </div>
+        {{ end }}
+    </div>
+</div>
+{{ end }}

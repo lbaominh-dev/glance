@@ -137,3 +137,20 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.weather-aqi {
+    padding: 0.05rem 0.45rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    font-size: var(--font-size-h6);
+    line-height: 1.4;
+    white-space: nowrap;
+    user-select: none;
+}
+
+.weather-aqi-good { color: hsl(140, 55%, 62%); }
+.weather-aqi-moderate { color: hsl(50, 75%, 62%); }
+.weather-aqi-sensitive { color: hsl(30, 85%, 62%); }
+.weather-aqi-unhealthy { color: hsl(0, 70%, 65%); }
+.weather-aqi-very-unhealthy { color: hsl(280, 55%, 68%); }
+.weather-aqi-hazardous { color: hsl(330, 65%, 62%); }

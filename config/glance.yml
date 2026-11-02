@@ -21,81 +21,99 @@ pages:
   - name: Home
     # Optionally, if you only have a single page you can hide the desktop navigation for a cleaner look
     # hide-desktop-navigation: true
+    head-widgets:
+      - type: market-ticker
+        gold: true
+        indices:
+          - VNINDEX
+          - VN30
+          - HNXIndex
+          - HNXUpcomIndex
+
     columns:
       - size: small
         widgets:
+          # A daily set of 10 B1-B2 vocabulary words, shown one card at a time.
+          # Tap the card to reveal its definition; use the arrows to move between words.
+          - type: vocabulary
+            title: Vocabulary · B1–B2
+            level: b1-b2
+            count: 10
+
           - type: calendar
             first-day-of-week: monday
-
-          - type: rss
-            limit: 10
-            collapse-after: 3
-            cache: 12h
-            feeds:
-              - url: https://selfh.st/rss/
-                title: selfh.st
-                limit: 4
-              - url: https://ciechanow.ski/atom.xml
-              - url: https://www.joshwcomeau.com/rss.xml
-                title: Josh Comeau
-              - url: https://samwho.dev/rss.xml
-              - url: https://ishadeed.com/feed.xml
-                title: Ahmad Shadeed
-
-          - type: twitch-channels
-            channels:
-              - theprimeagen
-              - j_blow
-              - giantwaffle
-              - cohhcarnage
-              - christitustech
-              - EJ_SA
 
       - size: full
         widgets:
           - type: group
             widgets:
               - type: hacker-news
-              - type: lobsters
+                collapse-after: 5
 
-          - type: videos
-            channels:
-              - UCXuqSBlHAE6Xw-yeJA0Tunw # Linus Tech Tips
-              - UCR-DXc1voovS8nhAvccRZhg # Jeff Geerling
-              - UCsBjURrPoezykLs9EqgamOA # Fireship
-              - UCBJycsmduvYEL83R_U4JriQ # Marques Brownlee
-              - UCHnyfMqiRRG1u-2MsSQLbXA # Veritasium
+              - type: rss
+                title: VNExpress
+                limit: 10
+                collapse-after: 5
+                cache: 15m
+                feeds:
+                  - url: https://vnexpress.net/rss/tin-moi-nhat.rss
+                    title: Tin mới nhất
+                    limit: 4
+                  - url: https://vnexpress.net/rss/so-hoa.rss
+                    title: Khoa học công nghệ
+                    limit: 3
+                  - url: https://vnexpress.net/rss/the-gioi.rss
+                    title: Thế giới
+                    limit: 3
 
-          - type: group
-            widgets:
-              - type: reddit
-                subreddit: technology
-                show-thumbnails: true
-              - type: reddit
-                subreddit: selfhosted
-                show-thumbnails: true
+              - type: custom-api
+                title: Daily.dev
+                cache: 1h
+                url: https://api.daily.dev/graphql
+                method: POST
+                body-type: json
+                body:
+                  query: |
+                    query MostUpvoted($first: Int!) {
+                      mostUpvotedFeed(first: $first) {
+                        edges {
+                          node {
+                            title
+                            url
+                            createdAt
+                            numUpvotes
+                            numComments
+                            source { name }
+                          }
+                        }
+                      }
+                    }
+                  variables:
+                    first: 10
+                template: |
+                  <ul class="list list-gap-10 collapsible-container" data-collapse-after="5">
+                  {{ range .JSON.Array "data.mostUpvotedFeed.edges" }}
+                    {{ $post := .Get "node" }}
+                    <li>
+                      <a class="size-h4 block text-truncate color-primary-if-not-visited" href="{{ $post.String "url" }}" target="_blank" rel="noreferrer">{{ $post.String "title" }}</a>
+                      <ul class="list-horizontal-text">
+                        <li>{{ $post.String "source.name" }}</li>
+                        <li {{ parseRelativeTime "2006-01-02T15:04:05.000Z" ($post.String "createdAt") }}></li>
+                        <li>{{ $post.Int "numUpvotes" }} upvotes</li>
+                        {{ if gt ($post.Int "numComments") 0 }}<li>{{ $post.Int "numComments" }} comments</li>{{ end }}
+                      </ul>
+                    </li>
+                  {{ end }}
+                  </ul>
 
       - size: small
         widgets:
           - type: weather
-            location: London, United Kingdom
+            location: Ho Chi Minh City, Vietnam
             units: metric # alternatively "imperial"
-            hour-format: 12h # alternatively "24h"
+            hour-format: 24h # alternatively "12h"
             # Optionally hide the location from being displayed in the widget
             # hide-location: true
-
-          - type: markets
-            markets:
-              - symbol: SPY
-                name: S&P 500
-              - symbol: BTC-USD
-                name: Bitcoin
-              - symbol: NVDA
-                name: NVIDIA
-              - symbol: AAPL
-                name: Apple
-              - symbol: MSFT
-                name: Microsoft
 
           - type: releases
             cache: 1d
@@ -103,10 +121,70 @@ pages:
             # read-only token from your Github account settings and use it here to increase the limit.
             # token: ...
             repositories:
-              - glanceapp/glance
-              - go-gitea/gitea
-              - immich-app/immich
-              - syncthing/syncthing
+              - repository: pingdotgg/t3code # T3 Code (nightly)
+                include-prereleases: true
+              - stablyai/orca # Orca
+              - earendil-works/pi # Pi agent (formerly badlogic/pi-mono)
+
+  - name: Gaming
+    slug: gaming
+    head-widgets:
+      - type: market-ticker
+        gold: true
+        indices:
+          - VNINDEX
+          - VN30
+          - HNXIndex
+          - HNXUpcomIndex
+
+    columns:
+      - size: small
+        widgets:
+          - type: rss
+            title: Tin tức Gaming
+            limit: 12
+            collapse-after: 6
+            cache: 20m
+            feeds:
+              - url: https://gamek.vn/home.rss
+                title: GameK
+                limit: 5
+              - url: https://gamek.vn/esport.rss
+                title: GameK Esports
+                limit: 4
+              - url: https://www.gamespot.com/feeds/mashup/
+                title: GameSpot
+                limit: 5
+
+      - size: full
+        widgets:
+          - type: lol-schedule
+            limit: 10
+            collapse-after: 5
+
+          - type: videos
+            title: LOL Highlights
+            limit: 8
+            collapse-after-rows: 2
+            channels:
+              - UCSF_aFGIIIoWY30GVV19TKA # LoL Esports
+              - UCKVlixycWmapnGQ_wht4cHQ # LCK
+              - UCWWZjhmokTbezUQr1kbbEYQ # LEC
+              - UCvqRdlKsE5Q8mf8YXbdIJLw # League of Legends
+
+      - size: small
+        widgets:
+          - type: steam-games
+            title: Game bom tấn sắp ra mắt
+            list: coming_soon
+            limit: 8
+            collapse-after: 4
+
+          - type: steam-games
+            title: Mùa sale game
+            list: specials
+            limit: 8
+            collapse-after: 4
 
   # Add more pages here:
   # - name: Your page name
