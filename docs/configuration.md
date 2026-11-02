@@ -25,6 +25,10 @@
   - [Group](#group)
   - [Split Column](#split-column)
   - [Custom API](#custom-api)
+  - [Market ticker](#market-ticker)
+  - [LOL schedule](#lol-schedule)
+  - [Steam games](#steam-games)
+  - [Vocabulary](#vocabulary)
   - [Extension](#extension)
   - [Weather](#weather)
   - [Todo](#todo)
@@ -1781,6 +1785,87 @@ parameters:
     - item2
 ```
 
+### Market ticker
+A compact ticker for gold and Vietnamese stock market indices. It fetches the SJC gold price from [vang.today](https://www.vang.today) and index quotes from SSI iBoard. Data is refreshed every 10 minutes.
+
+Example:
+
+```yaml
+head-widgets:
+  - type: market-ticker
+    gold: true
+    indices:
+      - VNINDEX
+      - VN30
+      - HNXIndex
+      - HNXUpcomIndex
+```
+
+#### Properties
+
+| Name | Type | Required | Default |
+| ---- | ---- | -------- | ------- |
+| gold | boolean | no | false |
+| indices | array | no | |
+
+##### `indices`
+Index symbols accepted by the SSI iBoard API, such as `VNINDEX`, `VN30`, `HNXIndex`, `HNX30` and `HNXUpcomIndex`.
+
+### LOL schedule
+Display upcoming League of Legends matches from the official lolesports schedule. Times are shown in Vietnam time (UTC+7).
+
+```yaml
+- type: lol-schedule
+  limit: 10
+  collapse-after: 5
+```
+
+#### Properties
+| Name | Type | Required | Default |
+| ---- | ---- | -------- | ------- |
+| limit | integer | no | 8 |
+| collapse-after | integer | no | 5 |
+
+### Steam games
+Display a list of games from Steam. Use `list: coming_soon` for upcoming releases or `list: specials` for games currently on sale.
+
+```yaml
+- type: steam-games
+  title: Game bom tấn sắp ra mắt
+  list: coming_soon
+```
+
+#### Properties
+| Name | Type | Required | Default |
+| ---- | ---- | -------- | ------- |
+| list | string | no | specials |
+| region | string | no | vn |
+| language | string | no | vietnamese |
+| limit | integer | no | 10 |
+| collapse-after | integer | no | 5 |
+
+### Vocabulary
+Display a daily set of English vocabulary words as flashcards. Only one card is shown at a time; use the previous/next arrows to move between words, and tap the card to flip it and reveal the definition, an example sentence and a link to Cambridge Dictionary. The word list changes every day.
+
+```yaml
+- type: vocabulary
+  title: Vocabulary · B1–B2
+  level: b1-b2
+  count: 10
+```
+
+#### Properties
+| Name | Type | Required | Default |
+| ---- | ---- | -------- | ------- |
+| level | string | no | b1-b2 |
+| count | integer | no | 10 |
+
+##### `level`
+The vocabulary range. `b1-b2` (the default) maps to the CET-4 word list, while `b2-c1` maps to CET-6. You can also use the API's categories directly: `ielts`, `toefl`, `gre` or `all`.
+
+##### `count`
+The number of cards to show. Must be between 1 and 20.
+
 ### Extension
 Display a widget provided by an external source (3rd party). If you want to learn more about developing extensions, checkout the [extensions documentation](extensions.md) (WIP).
 
@@ -1827,6 +1912,8 @@ A list of keys and values that will be sent to the extension as query paramters.
 
 ### Weather
 Display weather information for a specific location. The data is provided by https://open-meteo.com/.
+
+The current US AQI (air quality index) is also fetched from Open-Meteo and displayed below the temperature when available.
 
 Example:
 
@@ -2745,7 +2832,7 @@ Optionally, override the display value for the timezone to something more meanin
 
 
 ### Calendar
-Display a calendar.
+Display a calendar. Vietnamese public and cultural holidays are highlighted with a dot, with the holiday names listed under the calendar.
 
 Example:
 

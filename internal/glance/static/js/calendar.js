@@ -30,13 +30,20 @@ const [datesEntranceLeft, datesEntranceRight] = directions(
 const undoEntrance = slideFade({ direction: "left", distance: "100%", duration: 300 });
 
 export default function(element) {
+    let holidays = {};
+
+    try {
+        holidays = JSON.parse(element.dataset.holidays ?? "{}");
+    } catch {}
+
     element.swapWith(Calendar(
-        Number(element.dataset.firstDayOfWeek ?? 1)
+        Number(element.dataset.firstDayOfWeek ?? 1),
+        holidays
     ));
 }
 
 // TODO: when viewing the previous/next month, display the current date if it's within the spill-over days
-function Calendar(firstDay) {
+function Calendar(firstDay, holidays) {
     let header, dates;
     let advanceTimeTicker;
     let now = new Date();
@@ -63,7 +70,7 @@ function Calendar(firstDay) {
 
     const calendar = elem().classes("calendar").append(
         header = Header(nextClicked, prevClicked, undoClicked),
-        dates = Dates(firstDay)
+        dates = Dates(firstDay, holidays)
     );
 
     update(now);
@@ -127,8 +134,37 @@ function Header(nextClicked, prevClicked, undoClicked) {
     });
 }
 
-function Dates(firstDay) {
-    let dates, lastRenderedDate;
+function Dates(firstDay, holidays) {
+    let dates, holidaysElement, lastRenderedDate;
+
+    const updateHolidays = function(newDate) {
+        const monthKey = `${newDate.getFullYear()}-${String(newDate.getMonth() + 1).padStart(2, "0")}`;
+        const monthHolidays = Object.entries(holidays)
+            .filter(([date]) => date.startsWith(monthKey + "-"))
+            .sort(([a], [b]) => a.localeCompare(b));
+
+        holidaysElement.text("");
+
+        if (monthHolidays.length === 0) {
+            return;
+        }
+
+        const list = elem("ul").classes("list", "list-gap-4");
+
+        for (const [date, name] of monthHolidays) {
+            list.append(
+                elem("li").classes("size-h6", "flex", "gap-7").append(
+                    elem("span").classes("color-highlight").text(Number(date.slice(8))),
+                    elem("span").classes("color-subdue").text(name)
+                )
+            );
+        }
+
+        holidaysElement.append(
+            elem().classes("size-h6", "color-subdue", "margin-top-15").text("Ngày lễ"),
+            list.classes("margin-top-5")
+        );
+    };
 
     const updateFullMonth = function(now, newDate) {
         const firstWeekday = new Date(newDate.getFullYear(), newDate.getMonth(), 1).getDay();
@@ -143,7 +179,9 @@ function Dates(firstDay) {
         let index = 0;
 
         for (let i = 0; i < FULL_MONTH_SLOTS; i++) {
-            children[i].clearClasses("calendar-spillover-date", "calendar-current-date");
+            children[i]
+                .clearClasses("calendar-spillover-date", "calendar-current-date", "calendar-holiday-date")
+                .attr("title", "");
         }
 
         for (let i = 0; i < previousMonthSpilloverDays; i++, index++) {
@@ -153,8 +191,12 @@ function Dates(firstDay) {
         }
 
         for (let i = 1; i <= currentMonthDays; i++, index++) {
+            const holiday = holidays[dateKey(newDate.getFullYear(), newDate.getMonth(), i)];
+
             children[index]
                 .classesIf(isCurrentMonth && i === currentDate, "calendar-current-date")
+                .classesIf(holiday !== undefined, "calendar-holiday-date")
+                .attr("title", holiday ?? "")
                 .text(i);
         }
 
@@ -162,6 +204,7 @@ function Dates(firstDay) {
             children[index].classes("calendar-spillover-date").text(i + 1);
         }
 
+        updateHolidays(newDate);
         lastRenderedDate = newDate;
     };
 
@@ -188,8 +231,14 @@ function Dates(firstDay) {
 
         dates = elem().classes("calendar-dates", "margin-top-3").append(
             ...elem().classes("calendar-date").duplicate(FULL_MONTH_SLOTS)
-        )
+        ),
+
+        holidaysElement = elem().classes("calendar-holidays")
     ).component({ update });
+}
+
+function dateKey(year, month, day) {
+    return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 function datesWithinSameMonth(d1, d2) {

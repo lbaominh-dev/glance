@@ -405,3 +405,53 @@ kbd:active {
 .theme-picker.popover-active .current-theme-preview, .theme-picker:hover {
     opacity: 1;
 }
+
+.head-widgets .market-ticker {
+    background-color: var(--color-widget-background);
+    border: 1px solid var(--color-widget-content-border);
+    border-radius: var(--border-radius);
+    padding: 0.65rem 1rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.head-widgets .market-ticker::-webkit-scrollbar {
+    display: none;
+}
+
+.market-ticker {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    white-space: nowrap;
+}
+
+.market-ticker-item {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: var(--font-size-h6);
+    font-variant-numeric: tabular-nums;
+}
+
+.market-ticker-chart {
+    width: 3.2rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    opacity: 0.8;
+}
+
+.market-ticker-item + .market-ticker-item {
+    border-left: 1px solid var(--color-separator);
+    padding-left: 1.2rem;
+}
+
+.market-ticker-label {
+    color: var(--color-text-subdue);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.market-ticker-value {
+    color: var(--color-text-highlight);
+}

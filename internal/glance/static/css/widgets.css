@@ -13,6 +13,7 @@
 @import "widget-server-stats.css";
 @import "widget-twitch.css";
 @import "widget-videos.css";
+@import "widget-vocabulary.css";
 @import "widget-weather.css";
 @import "widget-todo.css";
 
@@ -90,4 +91,21 @@
 
 .widget + .widget {
     margin-top: var(--widget-gap);
+}
+
+.steam-game-cover-link {
+    flex-shrink: 0;
+}
+
+.steam-game-cover {
+    width: 11rem;
+    aspect-ratio: 184 / 69;
+    object-fit: cover;
+    border-radius: var(--border-radius);
+    background-color: var(--color-widget-background-highlight);
+}
+
+.steam-game-old-price {
+    color: var(--color-text-subdue);
+    text-decoration: line-through;
 }

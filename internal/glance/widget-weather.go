@@ -73,6 +73,12 @@ func (widget *weatherWidget) update(ctx context.Context) {
 		return
 	}
 
+	// Air quality is a nice-to-have and comes from a separate API, so a failure
+	// should not prevent the rest of the weather widget from rendering.
+	if airQuality, err := fetchAirQualityForOpenMeteoPlace(widget.Place); err == nil {
+		weather.AirQuality = airQuality
+	}
+
 	widget.Weather = weather
 }
 
@@ -88,6 +94,33 @@ type weather struct {
 	SunriseColumn       int
 	SunsetColumn        int
 	Columns             []weatherColumn
+	AirQuality          *airQuality
+}
+
+type airQuality struct {
+	US            int
+	Category      string
+	Description   string
+	CategoryClass string
+	PM25          float64
+	PM10          float64
+}
+
+func airQualityCategory(aqi int) (category, description, classname string) {
+	switch {
+	case aqi <= 50:
+		return "Good", "Good", "good"
+	case aqi <= 100:
+		return "Moderate", "Moderate", "moderate"
+	case aqi <= 150:
+		return "Sensitive", "Unhealthy for Sensitive Groups", "sensitive"
+	case aqi <= 200:
+		return "Unhealthy", "Unhealthy", "unhealthy"
+	case aqi <= 300:
+		return "Very Unhealthy", "Very Unhealthy", "very-unhealthy"
+	default:
+		return "Hazardous", "Hazardous", "hazardous"
+	}
 }
 
 func (w *weather) WeatherCodeAsString() string {
@@ -291,6 +324,40 @@ func fetchWeatherForOpenMeteoPlace(place *openMeteoPlaceResponseJson, units stri
 		SunriseColumn:       sunriseBar,
 		SunsetColumn:        sunsetBar,
 		Columns:             bars,
+	}, nil
+}
+
+type openMeteoAirQualityResponseJson struct {
+	Current struct {
+		USAQI int     `json:"us_aqi"`
+		PM25  float64 `json:"pm2_5"`
+		PM10  float64 `json:"pm10"`
+	} `json:"current"`
+}
+
+func fetchAirQualityForOpenMeteoPlace(place *openMeteoPlaceResponseJson) (*airQuality, error) {
+	query := url.Values{}
+	query.Add("latitude", fmt.Sprintf("%f", place.Latitude))
+	query.Add("longitude", fmt.Sprintf("%f", place.Longitude))
+	query.Add("timezone", place.Timezone)
+	query.Add("current", "us_aqi,pm2_5,pm10")
+
+	requestUrl := "https://air-quality-api.open-meteo.com/v1/air-quality?" + query.Encode()
+	request, _ := http.NewRequest("GET", requestUrl, nil)
+	responseJson, err := decodeJsonFromRequest[openMeteoAirQualityResponseJson](defaultHTTPClient, request)
+	if err != nil {
+		return nil, fmt.Errorf("%w: %v", errNoContent, err)
+	}
+
+	category, description, categoryClass := airQualityCategory(responseJson.Current.USAQI)
+
+	return &airQuality{
+		US:            responseJson.Current.USAQI,
+		Category:      category,
+		Description:   description,
+		CategoryClass: categoryClass,
+		PM25:          responseJson.Current.PM25,
+		PM10:          responseJson.Current.PM10,
 	}, nil
 }
 
