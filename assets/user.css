@@ -1,0 +1,10 @@
+/*
+ * Custom CSS for Glance.
+ * Served at /assets/user.css and loaded via theme.custom-css-file.
+ * Changes are picked up on container restart/redeploy.
+ *
+ * Example:
+ * :root {
+ *   --color-positive: #00ff88;
+ * }
+ */
