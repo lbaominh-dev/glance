@@ -66,6 +66,15 @@ pages:
                     title: Thế giới
                     limit: 3
 
+              - type: rss
+                title: Cafebiz
+                limit: 10
+                collapse-after: 5
+                cache: 15m
+                feeds:
+                  - url: https://cafebiz.vn/rss/home.rss
+                    limit: 10
+
               - type: custom-api
                 title: Daily.dev
                 cache: 1h
