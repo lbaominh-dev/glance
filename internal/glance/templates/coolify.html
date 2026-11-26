@@ -1,0 +1,96 @@
+{{ template "widget-base.html" . }}
+
+{{ define "widget-content" }}
+{{ if not .Configured }}
+<div class="coolify-setup">
+    <div class="color-highlight size-h4">Coolify API not configured</div>
+    <p class="margin-top-5">Set <code>COOLIFY_URL</code> and <code>COOLIFY_API_TOKEN</code> environment variables in Coolify (or configure <code>url</code> / <code>token</code> or <code>instances</code> in YAML) to list servers, deployed services, and live health checks.</p>
+</div>
+{{ else }}
+<div class="coolify-summary">
+    <div class="coolify-summary-item">
+        <span class="coolify-dot coolify-dot-{{ if .APIHealthy }}ok{{ else }}warn{{ end }}"></span>
+        <span class="color-highlight">Coolify {{ if gt .TotalInstances 1 }}{{ .HealthyInstances }}/{{ .TotalInstances }} OK{{ else if .APIHealthy }}OK{{ else }}DOWN{{ end }}</span>
+        {{ if .Version }}<span class="color-subdue">v{{ .Version }}</span>{{ end }}
+        {{ if .APIHealthy }}<span class="color-subdue">{{ .APILatencyMs }}ms</span>{{ end }}
+    </div>
+    {{ if .HasToken }}
+        {{ if .Servers }}
+        <div class="coolify-summary-item">
+            <span class="color-highlight">{{ .OnlineServers }}/{{ len .Servers }}</span>
+            <span class="color-subdue">servers</span>
+        </div>
+        {{ end }}
+        <div class="coolify-summary-item">
+            <span class="color-highlight">{{ .HealthyServices }}/{{ .TotalServices }}</span>
+            <span class="color-subdue">services healthy</span>
+        </div>
+        {{ if gt .TotalDatabases 0 }}
+        <div class="coolify-summary-item">
+            <span class="color-highlight">{{ .RunningDatabases }}/{{ .TotalDatabases }}</span>
+            <span class="color-subdue">DBs</span>
+        </div>
+        {{ end }}
+    {{ end }}
+</div>
+
+{{ if not .HasToken }}
+<div class="coolify-setup margin-top-10">
+    <div class="color-subdue size-h5">Set <code>COOLIFY_API_TOKEN</code> to list deployed apps, services, databases, and per-service health checks.</div>
+</div>
+{{ else }}
+    {{ if .Servers }}
+    <ul class="coolify-servers margin-top-10">
+        {{ range .Servers }}
+        <li class="coolify-server-chip">
+            <span class="coolify-dot coolify-dot-{{ .StateStyle }}"></span>
+            {{ if .Instance }}<span class="color-subdue">{{ .Instance }}</span>{{ end }}
+            <span class="color-highlight">{{ .Name }}</span>
+            {{ if .IP }}<span class="color-subdue">{{ .IP }}</span>{{ end }}
+            <span class="{{ if eq .StateStyle "ok" }}coolify-ok{{ else if eq .StateStyle "warn" }}color-negative{{ else }}color-subdue{{ end }}">{{ .StateLabel }}</span>
+            {{ if .HasMetrics }}
+            <span class="coolify-server-metrics">
+                {{ if .HasCPU }}<span class="{{ if .CPUHigh }}color-negative{{ else }}color-highlight{{ end }}">CPU {{ .CPUPercent }}%</span>{{ end }}
+                {{ if .HasMemory }}<span class="{{ if .MemoryHigh }}color-negative{{ else }}color-highlight{{ end }}">RAM {{ .MemoryPercent }}%</span>{{ end }}
+                {{ if .HasDisk }}<span class="{{ if .DiskHigh }}color-negative{{ else }}color-highlight{{ end }}">Disk {{ .DiskPercent }}%</span>{{ end }}
+            </span>
+            {{ end }}
+        </li>
+        {{ end }}
+    </ul>
+    {{ end }}
+
+    {{ if .Services }}
+    <ul class="list list-gap-10 list-with-separator collapsible-container margin-top-15" data-collapse-after="{{ .CollapseAfter }}">
+        {{ range .Services }}
+        <li class="coolify-service-row">
+            <div class="coolify-service-main">
+                <span class="coolify-kind">{{ .Kind }}</span>
+                <div class="min-width-0 grow">
+                    {{ if .URL }}
+                    <a class="size-h4 color-highlight text-truncate block" href="{{ .URL | safeURL }}" target="_blank" rel="noreferrer">{{ .Name }}</a>
+                    {{ else }}
+                    <div class="size-h4 color-highlight text-truncate">{{ .Name }}</div>
+                    {{ end }}
+                    {{ if .Subtitle }}
+                    <div class="size-h6 color-subdue text-truncate">{{ .Subtitle }}</div>
+                    {{ end }}
+                </div>
+            </div>
+            <div class="coolify-service-status">
+                {{ if .HasHTTPCheck }}
+                <span class="coolify-http-pill {{ if .HTTPOK }}coolify-http-ok{{ else }}coolify-http-err{{ end }}" title="{{ .CheckURL }}">{{ .HTTPText }}</span>
+                {{ end }}
+                <span class="size-h6 {{ if eq .StateStyle "ok" }}coolify-ok{{ else if eq .StateStyle "warn" }}color-negative{{ else }}color-subdue{{ end }}">{{ .CoolifyState }}</span>
+            </div>
+        </li>
+        {{ end }}
+    </ul>
+    {{ else if .ShowFailingOnly }}
+    <div class="text-center margin-top-15 coolify-ok">All Coolify services are healthy.</div>
+    {{ else }}
+    <div class="text-center margin-top-15 color-subdue">No Coolify services, applications, or databases found.</div>
+    {{ end }}
+{{ end }}
+{{ end }}
+{{ end }}

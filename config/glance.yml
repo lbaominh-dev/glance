@@ -195,6 +195,62 @@ pages:
             limit: 8
             collapse-after: 4
 
+  - name: Network
+    slug: network
+    columns:
+      - size: small
+        widgets:
+          - type: monitor
+            title: Connectivity
+            cache: 1m
+            sites:
+              - title: Cloudflare DNS
+                url: https://1.1.1.1
+                check-url: https://1.1.1.1/cdn-cgi/trace
+                icon: si:cloudflare
+              - title: Google DNS
+                url: https://dns.google
+                icon: si:google
+              - title: GitHub
+                url: https://github.com
+                icon: si:github
+
+      - size: full
+        widgets:
+          - type: coolify
+            title: Coolify & Services
+            cache: 1m
+            check-health: false
+            show-servers: true
+            show-metrics: true
+            show-databases: true
+            collapse-after: 10
+            # Single instance: reads COOLIFY_URL, COOLIFY_API_TOKEN (and optional COOLIFY_SENTINEL_URL / COOLIFY_SENTINEL_TOKEN) from env.
+            # Multiple Coolify instances / VPS control planes:
+            # instances:
+            #   - name: VPS 1
+            #     url: https://coolify-vps1.yourdomain.com
+            #     token: <COOLIFY_VPS1_TOKEN>
+            #     sentinel-url: https://sentinel-vps1.yourdomain.com
+            #   - name: VPS 2
+            #     url: https://coolify-vps2.yourdomain.com
+            #     token: <COOLIFY_VPS2_TOKEN>
+
+          # Optional: add server-stats for non-Coolify VPSes running glanceapp/agent
+          # - type: server-stats
+          #   title: Other Servers
+          #   servers:
+          #     - type: remote
+          #       name: VPS 2
+          #       url: https://agent-vps2.yourdomain.com
+          #       token: <AGENT_VPS2_TOKEN>
+
+          # Optional: uncomment after mounting /var/run/docker.sock:/var/run/docker.sock in Coolify
+          # - type: docker-containers
+          #   title: Containers
+          #   cache: 1m
+          #   format-container-names: true
+
   # Add more pages here:
   # - name: Your page name
   #   columns:

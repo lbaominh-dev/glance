@@ -1,0 +1,147 @@
+.widget-type-coolify {
+    --coolify-color-ok: hsl(142, 65%, 58%);
+}
+
+:root[data-scheme=light] .widget-type-coolify {
+    --coolify-color-ok: hsl(142, 68%, 34%);
+}
+
+.coolify-ok {
+    color: var(--coolify-color-ok);
+}
+
+.coolify-setup code {
+    color: var(--color-text-highlight);
+    background-color: var(--color-widget-background-highlight);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+}
+
+.coolify-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.8rem 1.4rem;
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid var(--color-separator);
+    font-size: var(--font-size-h5);
+}
+
+.coolify-summary-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.coolify-dot {
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.coolify-dot-ok {
+    background-color: var(--coolify-color-ok);
+}
+
+.coolify-dot-warn {
+    background-color: var(--color-negative);
+}
+
+.coolify-dot-muted {
+    background-color: var(--color-text-subdue);
+}
+
+.coolify-servers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+}
+
+.coolify-server-chip {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--border-radius);
+    background-color: var(--color-widget-background-highlight);
+    border: 1px solid var(--color-widget-content-border);
+    font-size: var(--font-size-h6);
+}
+
+.coolify-server-metrics {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding-left: 0.55rem;
+    border-left: 1px solid var(--color-separator);
+    font-variant-numeric: tabular-nums;
+}
+
+.coolify-service-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.coolify-service-main {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    min-width: 0;
+    flex: 1;
+}
+
+.coolify-kind {
+    font-size: var(--font-size-h6);
+    text-transform: uppercase;
+    color: var(--color-text-subdue);
+    background-color: var(--color-widget-background-highlight);
+    border: 1px solid var(--color-widget-content-border);
+    border-radius: 3px;
+    padding: 0.15rem 0.5rem;
+    flex-shrink: 0;
+    min-width: 5.4rem;
+    text-align: center;
+}
+
+.coolify-service-status {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.coolify-http-pill {
+    font-size: var(--font-size-h6);
+    padding: 0.15rem 0.55rem;
+    border-radius: 3px;
+    font-variant-numeric: tabular-nums;
+}
+
+.coolify-http-ok {
+    color: var(--coolify-color-ok);
+    background-color: var(--color-widget-background-highlight);
+    background-color: color-mix(in srgb, var(--coolify-color-ok) 12%, transparent);
+}
+
+.coolify-http-err {
+    color: var(--color-negative);
+    background-color: var(--color-widget-background-highlight);
+    background-color: color-mix(in srgb, var(--color-negative) 14%, transparent);
+}
+
+@container widget (max-width: 520px) {
+    .coolify-service-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.45rem;
+    }
+
+    .coolify-service-status {
+        padding-left: 6.3rem;
+    }
+}

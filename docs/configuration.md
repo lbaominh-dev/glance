@@ -1866,6 +1866,51 @@ The vocabulary range. `b1-b2` (the default) maps to the CET-4 word list, while `
 ##### `count`
 The number of cards to show. Must be between 1 and 20.
 
+### Coolify
+Display the health of one or more Coolify instances, managed VPS servers, deployed applications, services, and databases via the Coolify v4 REST API, along with optional live HTTP health checks against each deployed service's FQDN and health check path.
+
+```yaml
+- type: coolify
+  title: Deployed Services
+  cache: 1m
+  check-health: true
+  show-servers: true
+  show-databases: true
+  collapse-after: 8
+```
+
+For multiple Coolify instances across separate VPSes:
+
+```yaml
+- type: coolify
+  title: Deployed Services
+  instances:
+    - name: VPS 1
+      url: ${COOLIFY_VPS1_URL}
+      token: ${COOLIFY_VPS1_TOKEN}
+    - name: VPS 2
+      url: ${COOLIFY_VPS2_URL}
+      token: ${COOLIFY_VPS2_TOKEN}
+```
+
+#### Properties
+| Name | Type | Required | Default |
+| ---- | ---- | -------- | ------- |
+| url | string | no | `$COOLIFY_URL` env var |
+| token | string | no | `$COOLIFY_API_TOKEN` env var |
+| sentinel-url | string | no | `$COOLIFY_SENTINEL_URL` or auto-discovered from Coolify |
+| sentinel-token | string | no | `$COOLIFY_SENTINEL_TOKEN` or fetched via `/api/v1/servers/{uuid}/sentinel` |
+| instances | array | no | |
+| allow-insecure | boolean | no | false |
+| check-health | boolean | no | true |
+| health-check-timeout | string | no | 3s |
+| timeout | string | no | 5s |
+| show-servers | boolean | no | true |
+| show-metrics | boolean | no | true |
+| show-databases | boolean | no | true |
+| show-failing-only | boolean | no | false |
+| collapse-after | integer | no | 8 |
+
 ### Extension
 Display a widget provided by an external source (3rd party). If you want to learn more about developing extensions, checkout the [extensions documentation](extensions.md) (WIP).
 
